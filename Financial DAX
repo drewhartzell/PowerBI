@@ -1,0 +1,26 @@
+YTD Count This Year = 
+CALCULATE(
+    COUNT('Etsy Orders – Combined'[Order ID]),
+    FILTER(
+        ALL('Etsy Orders – Combined'[Sale Date]),
+        'Etsy Orders – Combined'[Sale Date] >= DATE(YEAR(TODAY()), 1, 1)
+            && 'Etsy Orders – Combined'[Sale Date] <= TODAY()
+    )
+)
+
+YTD Count Previous Year = 
+CALCULATE(
+    COUNT('Etsy Orders – Combined'[Order ID]),
+    FILTER(
+        ALL('Etsy Orders – Combined'[Sale Date]),
+        'Etsy Orders – Combined'[Sale Date] >= DATE(YEAR(TODAY()) - 1, 1, 1)
+            && 'Etsy Orders – Combined'[Sale Date] <= DATE(YEAR(TODAY()) - 1, MONTH(TODAY()), DAY(TODAY()))
+    )
+)
+
+YTD Count Percentage Change = 
+DIVIDE(
+    [YTD Count This Year] - [YTD Count Previous Year],
+    [YTD Count Previous Year],
+    0
+)
