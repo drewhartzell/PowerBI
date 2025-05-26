@@ -1,0 +1,59 @@
+DayGroup = 
+VAR DayOfMonth = DAY('Etsy Items – Combined'[Sale Date])
+VAR PeriodNumber = CEILING(DayOfMonth / 7, 1)
+RETURN
+    SWITCH(
+        TRUE(),
+        DayOfMonth <= 7, "Days 1-7",
+        DayOfMonth <= 14, "Days 8-14",
+        DayOfMonth <= 21, "Days 15-21",
+        DayOfMonth <= 28, "Days 22-28",
+        "Days 29+"
+    )
+
+------------------------------------------------------------------------------------------------------------------
+
+
+Item Material = 
+SWITCH(
+    TRUE(),
+    CONTAINSSTRING(TRIM([Item Name (Search)]), "bedspread") || CONTAINSSTRING(TRIM([Item Name (Search)]), "crocheted") || CONTAINSSTRING(TRIM([Item Name (Search)]), "textile") || CONTAINSSTRING(TRIM([Item Name (Search)]), "fabric") || CONTAINSSTRING(TRIM([Item Name (Search)]), "cloth") || CONTAINSSTRING(TRIM([Item Name (Search)]), "wool") || CONTAINSSTRING(TRIM([Item Name (Search)]), "linen") || CONTAINSSTRING(TRIM([Item Name (Search)]), "tablecloth") || CONTAINSSTRING(TRIM([Item Name (Search)]), "doilies"), "Textiles/Linens",
+    CONTAINSSTRING(TRIM([Item Name (Search)]), "china"), "China",
+    CONTAINSSTRING(TRIM([Item Name (Search)]), "glass") || CONTAINSSTRING(TRIM([Item Name (Search)]), "glasses") || CONTAINSSTRING(TRIM([Item Name (Search)]), "fenton") || CONTAINSSTRING(TRIM([Item Name (Search)]), "crystal"), "Glass",
+    CONTAINSSTRING(TRIM([Item Name (Search)]), "brass"), "Brass",
+    CONTAINSSTRING(TRIM([Item Name (Search)]), "pottery"), "Pottery",
+    CONTAINSSTRING(TRIM([Item Name (Search)]), "porcelain"), "Porcelain",
+    CONTAINSSTRING(TRIM([Item Name (Search)]), "wood") || CONTAINSSTRING(TRIM([Item Name (Search)]), "wooden"), "Wooden",
+    CONTAINSSTRING(TRIM([Item Name (Search)]), "ceramic"), "Ceramic",
+    CONTAINSSTRING(TRIM([Item Name (Search)]), "metal"), "Metal",
+    CONTAINSSTRING(TRIM([Item Name (Search)]), "wicker"), "Wicker",
+    CONTAINSSTRING(TRIM([Item Name (Search)]), "lenox"), "Lenox",
+    CONTAINSSTRING(TRIM([Item Name (Search)]), "paper"), "Paper",
+    CONTAINSSTRING(TRIM([Item Name (Search)]), "bronze"), "Bronze",
+    CONTAINSSTRING(TRIM([Item Name (Search)]), "ivory"), "Ivory",
+    CONTAINSSTRING(TRIM([Item Name (Search)]), "bamboo"), "Bamboo",
+    CONTAINSSTRING(TRIM([Item Name (Search)]), "resin"), "Resin",
+    CONTAINSSTRING(TRIM([Item Name (Search)]), "copper"), "Copper",
+    CONTAINSSTRING(TRIM([Item Name (Search)]), "nickel"), "Nickel",
+    CONTAINSSTRING(TRIM([Item Name (Search)]), "pewter"), "Pewter",
+    CONTAINSSTRING(TRIM([Item Name (Search)]), "quartz"), "Quartzite",
+    CONTAINSSTRING(TRIM([Item Name (Search)]), "spode"), "Spode",
+    CONTAINSSTRING(TRIM([Item Name (Search)]), "lucite"), "Lucite",
+    CONTAINSSTRING(TRIM([Item Name (Search)]), "steel"), "Steel",
+    CONTAINSSTRING(TRIM([Item Name (Search)]), "rubber") || CONTAINSSTRING(TRIM([Item Name (Search)]), "plastic"), "Plastic/Rubber",
+    TRUE(), "Other"
+)
+
+---------------------------------------------------------------------------------------------------------------------
+
+Avg. Revenue 4 Stars = CALCULATE(AVERAGE('Etsy Orders – Combined'[Revenue]),'reviews'[Rating Category]="Four Stars or Less")
+Avg. Revenue 5 Stars = CALCULATE(AVERAGE('Etsy Orders – Combined'[Revenue]),'reviews'[Rating Category]="Five Stars")
+Avg. Revenue Reviews = 
+DIVIDE(
+    [Avg. Revenue 5 Stars] - [Avg. Revenue 4 Stars],
+    [Avg. Revenue 4 Stars],
+    0
+)
+
+------------------------------------------------------------------------------------------------------------------------
+
