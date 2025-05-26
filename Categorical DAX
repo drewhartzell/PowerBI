@@ -57,3 +57,57 @@ DIVIDE(
 
 ------------------------------------------------------------------------------------------------------------------------
 
+Refund Type = if('Etsy Sales – Combined'[Listing Amount]='Etsy Sales – Combined'[Refund Amount],"Full Refund",if('Etsy Sales – Combined'[Refund Amount]=0.00,"No Refund","Partial Refund"))
+Rating Category = IF('reviews'[Star Rating]>4,"Five Stars","Four Stars or Less")
+
+Review Detail = 
+    SWITCH(
+        TRUE(),
+        CONTAINSSTRING(TRIM(reviews[Message]), "price") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "deal"), 
+        "Well Priced",
+
+        CONTAINSSTRING(TRIM(reviews[Message]), "fast") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "timely") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "delivery") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "quick"), 
+        "Quick Delivery",
+
+        CONTAINSSTRING(TRIM(reviews[Message]), "packaging") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "protected") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "packed") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "packing") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "packaged"), 
+        "Packaged Well",
+
+        CONTAINSSTRING(TRIM(reviews[Message]), "condition") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "protected") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "amazing") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "pretty") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "gorgeous"), 
+        "Beautiful Item",
+
+        CONTAINSSTRING(TRIM(reviews[Message]), "transaction") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "love") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "happy") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "thank"), 
+        "Pleased with Service",
+
+        CONTAINSSTRING(TRIM(reviews[Message]), "service") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "experience") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "seller"), 
+        "Pleased with Service",
+
+        CONTAINSSTRING(TRIM(reviews[Message]), "excellent") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "nice") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "beautiful") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "cute") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "perfect") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "wonderful"), 
+        "Beautiful Item",
+
+        ISBLANK(reviews[Message]), "Blank",
+        
+        TRUE(), "Other"
+    )
+
