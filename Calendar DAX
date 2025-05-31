@@ -2,3 +2,18 @@ Day of Week = FORMAT('Etsy Orders – Combined'[Sale Date],"dddd")
 Sale Day = DAY('Etsy Orders – Combined'[Sale Date])
 Sale Month = FORMAT('Etsy Orders – Combined'[Sale Date], "MMMM")
 Sale Year = YEAR('Etsy Orders – Combined'[Sale Date])
+
+//
+//
+
+Calendar = 
+ADDCOLUMNS(
+    CALENDAR(DATE(2015, 1, 1), DATE(2030, 12, 31)),
+    "Year", YEAR([Date]),
+    "Month", MONTH([Date]),
+    "Day", DAY([Date]),
+    "YearMonth", FORMAT([Date], "YYYY-MM"),
+    "Day of the Week", FORMAT([Date], "dddd"),
+    "ISO Week", WEEKNUM([Date], 21)
+)
+
