@@ -111,3 +111,46 @@ Review Detail =
         TRUE(), "Other"
     )
 
+-----------------------------------------------------------------------------------------------------------------
+
+Timeline Text Pie = 
+    VAR CurrentMonthStart = DATE(YEAR(TODAY()), MONTH(TODAY()), 1)
+    VAR CurrentMonthEnd = EOMONTH(TODAY(), 0)
+    VAR ExpectedDate = 'PowerBI Consolidated Backlog by PG Last N Weeks'[Expected Realization Date]
+    VAR ExpectedText = 'PowerBI Consolidated Backlog by PG Last N Weeks'[Expected Realization Text]
+    
+    RETURN
+    IF(
+        ISBLANK(ExpectedDate) || NOT ISNUMBER(ExpectedDate),
+        ExpectedText,
+        IF(
+            ExpectedDate >= CurrentMonthStart && ExpectedDate <= CurrentMonthEnd, 
+            "Current Month", 
+            IF(
+                ExpectedDate < CurrentMonthStart, 
+                "Past Backorder", 
+                IF(
+                    ExpectedDate > CurrentMonthEnd, 
+                    "Future Backlog", 
+                    BLANK()
+                )
+            )
+        )
+    )
+
+//
+//
+
+Days Outstanding Band = 
+SWITCH(
+    TRUE(),
+    [Days Outstanding] <= 3, "0-3 Days",
+    [Days Outstanding] <= 9, "4-9 Days",
+    [Days Outstanding] <= 29, "10-29 Days",
+    [Days Outstanding] <= 59, "30-59 Days",
+    [Days Outstanding] <= 89, "60-89 Days",
+    "90+ Days"
+)
+
+
+
