@@ -8,8 +8,12 @@ import matplotlib.pyplot as plt
 df = dataset[['Date', 'Sales']].rename(columns={'Date': 'ds', 'Sales': 'y'})
 df['ds'] = pd.to_datetime(df['ds'])
 
+# Aggregate values by different parameters (remove if the aggregation is not wanted) --
+# M, A, Q, W and/or mean instead of sum()
+monthly_df = df.resample('M', on='ds').sum().reset_index()
+
 model = Prophet()
-model.fit(df)
+model.fit(montly_df)
 
 # Adjust the periods as necessary and the date parameter
 future = model.make_future_dataframe(periods=12, freq='M')
