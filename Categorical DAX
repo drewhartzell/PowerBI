@@ -1,21 +1,8 @@
-DayGroup = 
-VAR DayOfMonth = DAY('Etsy Items – Combined'[Sale Date])
-VAR PeriodNumber = CEILING(DayOfMonth / 7, 1)
-RETURN
-    SWITCH(
-        TRUE(),
-        DayOfMonth <= 7, "Days 1-7",
-        DayOfMonth <= 14, "Days 8-14",
-        DayOfMonth <= 21, "Days 15-21",
-        DayOfMonth <= 28, "Days 22-28",
-        "Days 29+"
-    )
-
-------------------------------------------------------------------------------------------------------------------
+# Categorical DAX #
 
 # IF Statement Examples #
 
-Refund Type = if('Etsy Sales – Combined'[Listing Amount]='Etsy Sales – Combined'[Refund Amount],"Full Refund",if('Etsy Sales – Combined'[Refund Amount]=0.00,"No Refund","Partial Refund"))
+Refund Type = if('Etsy Sales – Combined'[Listing Amount]='Etsy Sales – Combined'[Refund Amount],"Full Refund",if('Etsy         Sales – Combined'[Refund Amount]=0.00,"No Refund","Partial Refund"))
 
 //
 //
@@ -26,7 +13,7 @@ Rating Category = IF('reviews'[Star Rating]>4,"Five Stars","Four Stars or Less")
 
 # CALCULATE(AVERAGE) Statement Examples #
 
-Avg. Revenue 4 Stars = CALCULATE(AVERAGE('Etsy Orders – Combined'[Revenue]),'reviews'[Rating Category]="Four Stars or Less")
+Avg. Revenue 4 Stars = CALCULATE(AVERAGE('Etsy Orders – Combined'[Revenue]),'reviews'[Rating Category]="Four Stars or         Less")
 
 //
 //
@@ -37,10 +24,10 @@ Avg. Revenue 5 Stars = CALCULATE(AVERAGE('Etsy Orders – Combined'[Revenue]),'r
 //
 
 Avg. Revenue Reviews = 
-DIVIDE(
-    [Avg. Revenue 5 Stars] - [Avg. Revenue 4 Stars],
-    [Avg. Revenue 4 Stars],
-    0
+    DIVIDE(
+        [Avg. Revenue 5 Stars] - [Avg. Revenue 4 Stars],
+        [Avg. Revenue 4 Stars],
+        0
 )
 
 //
@@ -109,7 +96,7 @@ Review Detail =
 Item Material = 
 SWITCH(
     TRUE(),
-    CONTAINSSTRING(TRIM([Item Name (Search)]), "bedspread") || CONTAINSSTRING(TRIM([Item Name (Search)]), "crocheted") || CONTAINSSTRING(TRIM([Item Name (Search)]), "textile") || CONTAINSSTRING(TRIM([Item Name (Search)]), "fabric") || CONTAINSSTRING(TRIM([Item Name (Search)]), "cloth") || CONTAINSSTRING(TRIM([Item Name (Search)]), "wool") || CONTAINSSTRING(TRIM([Item Name (Search)]), "linen") || CONTAINSSTRING(TRIM([Item Name (Search)]), "tablecloth") || CONTAINSSTRING(TRIM([Item Name (Search)]), "doilies"), "Textiles/Linens",
+    CONTAINSSTRING(TRIM([Item Name (Search)]), "bedspread") || CONTAINSSTRING(TRIM([Item Name (Search)]), "crocheted") ||  CONTAINSSTRING(TRIM([Item Name (Search)]), "textile") || CONTAINSSTRING(TRIM([Item Name (Search)]), "fabric") || CONTAINSSTRING(TRIM([Item Name (Search)]), "cloth") || CONTAINSSTRING(TRIM([Item Name (Search)]), "wool") || CONTAINSSTRING(TRIM([Item Name (Search)]), "linen") || CONTAINSSTRING(TRIM([Item Name (Search)]), "tablecloth") || CONTAINSSTRING(TRIM([Item Name (Search)]), "doilies"), "Textiles/Linens",
     CONTAINSSTRING(TRIM([Item Name (Search)]), "china"), "China",
     CONTAINSSTRING(TRIM([Item Name (Search)]), "glass") || CONTAINSSTRING(TRIM([Item Name (Search)]), "glasses") || CONTAINSSTRING(TRIM([Item Name (Search)]), "fenton") || CONTAINSSTRING(TRIM([Item Name (Search)]), "crystal"), "Glass",
     CONTAINSSTRING(TRIM([Item Name (Search)]), "brass"), "Brass",
@@ -134,4 +121,53 @@ SWITCH(
     CONTAINSSTRING(TRIM([Item Name (Search)]), "steel"), "Steel",
     CONTAINSSTRING(TRIM([Item Name (Search)]), "rubber") || CONTAINSSTRING(TRIM([Item Name (Search)]), "plastic"), "Plastic/Rubber",
     TRUE(), "Other"
+)
+
+//
+//
+
+DayGroup = 
+VAR DayOfMonth = DAY('Etsy Items – Combined'[Sale Date])
+VAR PeriodNumber = CEILING(DayOfMonth / 7, 1)
+RETURN
+    SWITCH(
+        TRUE(),
+        DayOfMonth <= 7, "Days 1-7",
+        DayOfMonth <= 14, "Days 8-14",
+        DayOfMonth <= 21, "Days 15-21",
+        DayOfMonth <= 28, "Days 22-28",
+        "Days 29+"
+    )
+
+//
+//
+
+Days Outstanding Band = 
+SWITCH(
+    TRUE(),
+    [Days Outstanding] <= 3, "0-3 Days",
+    [Days Outstanding] <= 9, "4-9 Days",
+    [Days Outstanding] <= 29, "10-29 Days",
+    [Days Outstanding] <= 59, "30-59 Days",
+    [Days Outstanding] <= 89, "60-89 Days",
+    "90+ Days"
+)
+
+//
+//
+
+Timeline Text Pie = 
+VAR CurrentMonthStart = DATE(YEAR(TODAY()), MONTH(TODAY()), 1)
+VAR CurrentMonthEnd = EOMONTH(TODAY(), 0)
+VAR ExpectedDate = 'PowerBI Consolidated Backlog by PG Last N Weeks'[Expected Realization Date]
+VAR ExpectedText = 'PowerBI Consolidated Backlog by PG Last N Weeks'[Expected Realization Text]
+
+RETURN
+SWITCH(
+    TRUE(),
+    ISBLANK(ExpectedDate) || NOT ISNUMBER(ExpectedDate), ExpectedText,
+    ExpectedDate >= CurrentMonthStart && ExpectedDate <= CurrentMonthEnd, "Current Month",
+    ExpectedDate < CurrentMonthStart, "Past Backorder",
+    ExpectedDate > CurrentMonthEnd, "Future Backlog",
+    BLANK()
 )
