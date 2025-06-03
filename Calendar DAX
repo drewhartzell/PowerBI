@@ -1,4 +1,0 @@
-Day of Week = FORMAT('Etsy Orders – Combined'[Sale Date],"dddd")
-Sale Day = DAY('Etsy Orders – Combined'[Sale Date])
-Sale Month = FORMAT('Etsy Orders – Combined'[Sale Date], "MMMM")
-Sale Year = YEAR('Etsy Orders – Combined'[Sale Date])
