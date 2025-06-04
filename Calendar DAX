@@ -1,4 +1,15 @@
+# Calendar DAX for Date tables #
+
 Day of Week = FORMAT('Etsy Orders – Combined'[Sale Date],"dddd")
 Sale Day = DAY('Etsy Orders – Combined'[Sale Date])
 Sale Month = FORMAT('Etsy Orders – Combined'[Sale Date], "MMMM")
 Sale Year = YEAR('Etsy Orders – Combined'[Sale Date])
+
+
+Calendar = 
+ADDCOLUMNS (
+    CALENDAR (DATE(2022, 1, 1), DATE(2025, 12, 31)),
+    "Month Name", FORMAT([Date], "MMMM"),
+    "Month Number", MONTH([Date]),
+    "Year", YEAR([Date])
+)
