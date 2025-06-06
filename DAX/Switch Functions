@@ -1,0 +1,147 @@
+# SWTICH(TRUE() Utilization #
+
+Review Detail = 
+    SWITCH(
+        TRUE(),
+        CONTAINSSTRING(TRIM(reviews[Message]), "price") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "deal"), 
+        "Well Priced",
+
+        CONTAINSSTRING(TRIM(reviews[Message]), "fast") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "timely") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "delivery") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "quick"), 
+        "Quick Delivery",
+
+        CONTAINSSTRING(TRIM(reviews[Message]), "packaging") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "protected") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "packed") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "packing") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "packaged"), 
+        "Packaged Well",
+
+        CONTAINSSTRING(TRIM(reviews[Message]), "condition") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "protected") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "amazing") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "pretty") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "gorgeous"), 
+        "Beautiful Item",
+
+        CONTAINSSTRING(TRIM(reviews[Message]), "transaction") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "love") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "happy") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "thank"), 
+        "Pleased with Service",
+
+        CONTAINSSTRING(TRIM(reviews[Message]), "service") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "experience") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "seller"), 
+        "Pleased with Service",
+
+        CONTAINSSTRING(TRIM(reviews[Message]), "excellent") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "nice") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "beautiful") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "cute") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "perfect") || 
+        CONTAINSSTRING(TRIM(reviews[Message]), "wonderful"), 
+        "Beautiful Item",
+
+        ISBLANK(reviews[Message]), "Blank",
+        
+            TRUE(), "Other"
+    )
+
+//
+//
+
+Item Material = 
+    SWITCH(
+        TRUE(),
+        CONTAINSSTRING(TRIM([Item Name (Search)]), "bedspread") || CONTAINSSTRING(TRIM([Item Name (Search)]), "crocheted") ||  CONTAINSSTRING(TRIM([Item Name (Search)]), "textile") || CONTAINSSTRING(TRIM([Item Name (Search)]), "fabric") || CONTAINSSTRING(TRIM([Item Name (Search)]), "cloth") || CONTAINSSTRING(TRIM([Item Name (Search)]), "wool") || CONTAINSSTRING(TRIM([Item Name (Search)]), "linen") || CONTAINSSTRING(TRIM([Item Name (Search)]), "tablecloth") || CONTAINSSTRING(TRIM([Item Name (Search)]), "doilies"), "Textiles/Linens",
+        CONTAINSSTRING(TRIM([Item Name (Search)]), "china"), "China",
+        CONTAINSSTRING(TRIM([Item Name (Search)]), "glass") || CONTAINSSTRING(TRIM([Item Name (Search)]), "glasses") || CONTAINSSTRING(TRIM([Item Name (Search)]), "fenton") || CONTAINSSTRING(TRIM([Item Name (Search)]), "crystal"), "Glass",
+        CONTAINSSTRING(TRIM([Item Name (Search)]), "brass"), "Brass",
+        CONTAINSSTRING(TRIM([Item Name (Search)]), "pottery"), "Pottery",
+        CONTAINSSTRING(TRIM([Item Name (Search)]), "porcelain"), "Porcelain",
+        CONTAINSSTRING(TRIM([Item Name (Search)]), "wood") || CONTAINSSTRING(TRIM([Item Name (Search)]), "wooden"), "Wooden",
+        CONTAINSSTRING(TRIM([Item Name (Search)]), "ceramic"), "Ceramic",
+        CONTAINSSTRING(TRIM([Item Name (Search)]), "metal"), "Metal",
+        CONTAINSSTRING(TRIM([Item Name (Search)]), "wicker"), "Wicker",
+        CONTAINSSTRING(TRIM([Item Name (Search)]), "lenox"), "Lenox",
+        CONTAINSSTRING(TRIM([Item Name (Search)]), "paper"), "Paper",
+        CONTAINSSTRING(TRIM([Item Name (Search)]), "bronze"), "Bronze",
+        CONTAINSSTRING(TRIM([Item Name (Search)]), "ivory"), "Ivory",
+        CONTAINSSTRING(TRIM([Item Name (Search)]), "bamboo"), "Bamboo",
+        CONTAINSSTRING(TRIM([Item Name (Search)]), "resin"), "Resin",
+        CONTAINSSTRING(TRIM([Item Name (Search)]), "copper"), "Copper",
+        CONTAINSSTRING(TRIM([Item Name (Search)]), "nickel"), "Nickel",
+        CONTAINSSTRING(TRIM([Item Name (Search)]), "pewter"), "Pewter",
+        CONTAINSSTRING(TRIM([Item Name (Search)]), "quartz"), "Quartzite",
+        CONTAINSSTRING(TRIM([Item Name (Search)]), "spode"), "Spode",
+        CONTAINSSTRING(TRIM([Item Name (Search)]), "lucite"), "Lucite",
+        CONTAINSSTRING(TRIM([Item Name (Search)]), "steel"), "Steel",
+        CONTAINSSTRING(TRIM([Item Name (Search)]), "rubber") || CONTAINSSTRING(TRIM([Item Name (Search)]), "plastic"), "Plastic/Rubber",
+            TRUE(), "Other"
+    )
+
+//
+//
+
+DayGroup = 
+VAR DayOfMonth = DAY('Etsy Items – Combined'[Sale Date])
+VAR PeriodNumber = CEILING(DayOfMonth / 7, 1)
+    RETURN
+        SWITCH(
+            TRUE(),
+            DayOfMonth <= 7, "Days 1-7",
+            DayOfMonth <= 14, "Days 8-14",
+            DayOfMonth <= 21, "Days 15-21",
+            DayOfMonth <= 28, "Days 22-28",
+            "Days 29+"
+    )
+
+//
+//
+
+Days Outstanding Band = 
+SWITCH(
+    TRUE(),
+    [Days Outstanding] <= 3, "0-3 Days",
+    [Days Outstanding] <= 9, "4-9 Days",
+    [Days Outstanding] <= 29, "10-29 Days",
+    [Days Outstanding] <= 59, "30-59 Days",
+    [Days Outstanding] <= 89, "60-89 Days",
+    "90+ Days"
+)
+
+//
+//
+
+Timeline Text Pie = 
+VAR CurrentMonthStart = DATE(YEAR(TODAY()), MONTH(TODAY()), 1)
+VAR CurrentMonthEnd = EOMONTH(TODAY(), 0)
+VAR ExpectedDate = 'PowerBI Consolidated Backlog by PG Last N Weeks'[Expected Realization Date]
+VAR ExpectedText = 'PowerBI Consolidated Backlog by PG Last N Weeks'[Expected Realization Text]
+
+RETURN
+    SWITCH(
+        TRUE(),
+        ISBLANK(ExpectedDate) || NOT ISNUMBER(ExpectedDate), ExpectedText,
+        ExpectedDate >= CurrentMonthStart && ExpectedDate <= CurrentMonthEnd, "Current Month",
+        ExpectedDate < CurrentMonthStart, "Past Backorder",
+        ExpectedDate > CurrentMonthEnd, "Future Backlog",
+        BLANK()
+)
+
+//
+//
+
+Selected Region = 
+VAR RegionCount = DISTINCTCOUNT(PPV_Combined[Region])
+RETURN 
+    SWITCH(
+        TRUE(),
+        RegionCount = 0 || RegionCount = 4, "Global",
+        RegionCount = 1, SELECTEDVALUE(PPV_Combined[Region]),
+        RegionCount > 1, "Multiple Regions"
+    )
