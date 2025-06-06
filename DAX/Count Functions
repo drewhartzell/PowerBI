@@ -1,1 +1,73 @@
+# Etsy #
 
+Buyer Count = CALCULATE(
+    COUNTROWS('Etsy Orders – Combined'),
+    FILTER('Etsy Orders – Combined', 'Etsy Orders – Combined'[Buyer] = EARLIER('Etsy Orders – Combined'[Buyer]))
+)
+
+//
+//
+
+Number of Orders = COUNTROWS('Etsy Orders – Combined')
+
+//
+//
+
+YTD Return Count This Year = 
+CALCULATE(
+    COUNT('Etsy Sales – Combined'[Order ID]),
+    FILTER(
+        ALL('Etsy Sales – Combined'[Order Date]),
+        'Etsy Sales – Combined'[Order Date] >= DATE(YEAR(TODAY()), 1, 1)
+            && 'Etsy Sales – Combined'[Order Date] <= TODAY()
+    )
+)
+
+//
+//
+
+YTD Count This Year = 
+CALCULATE(
+    COUNT('Etsy Orders – Combined'[Order ID]),
+    FILTER(
+        ALL('Etsy Orders – Combined'[Sale Date]),
+        'Etsy Orders – Combined'[Sale Date] >= DATE(YEAR(TODAY()), 1, 1)
+            && 'Etsy Orders – Combined'[Sale Date] <= TODAY()
+    )
+)
+
+//
+//
+
+YTD Return Count Previous Year = 
+CALCULATE(
+    COUNT('Etsy Sales – Combined'[Order ID]),
+    FILTER(
+        ALL('Etsy Sales – Combined'[Order Date]),
+        'Etsy Sales – Combined'[Order Date] >= DATE(YEAR(TODAY()) - 1, 1, 1)
+            && 'Etsy Sales – Combined'[Order Date] <= DATE(YEAR(TODAY()) - 1, MONTH(TODAY()), DAY(TODAY()))
+    )
+)
+
+//
+//
+
+YTD Count Previous Year = 
+CALCULATE(
+    COUNT('Etsy Orders – Combined'[Order ID]),
+    FILTER(
+        ALL('Etsy Orders – Combined'[Sale Date]),
+        'Etsy Orders – Combined'[Sale Date] >= DATE(YEAR(TODAY()) - 1, 1, 1)
+            && 'Etsy Orders – Combined'[Sale Date] <= DATE(YEAR(TODAY()) - 1, MONTH(TODAY()), DAY(TODAY()))
+    )
+)
+
+//
+//
+
+YTD Count Percentage Change = 
+DIVIDE(
+    [YTD Count This Year] - [YTD Count Previous Year],
+    [YTD Count Previous Year],
+    0
+)
