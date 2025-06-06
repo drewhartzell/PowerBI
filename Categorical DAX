@@ -9,6 +9,22 @@ Refund Type = if('Etsy Sales – Combined'[Listing Amount]='Etsy Sales – Combi
 
 Rating Category = IF('reviews'[Star Rating]>4,"Five Stars","Four Stars or Less")
 
+//
+//
+
+Service Ind. New :=
+IF (
+    'SO - Delivery Performance YTD (Power BI)'[Plant.Plant Level 01.Key] = "USS1" &&
+    'SO - Delivery Performance YTD (Power BI)'[Storage location.Storage location Level 01.Key] <> "USS1/CPWR",
+    "X",
+    IF (
+        MID ( 'SO - Delivery Performance YTD (Power BI)'[Plant.Plant Level 01.Key], 3, 1 ) = "S" &&
+        'SO - Delivery Performance YTD (Power BI)'[Storage location.Storage location Level 01.Key] <> "USS1/CPWR",
+        "X",
+        "#"
+    )
+)
+
 ---------------------------------------------------------------------------------------------------------------------
 
 # CALCULATE(AVERAGE) Statement Examples #
