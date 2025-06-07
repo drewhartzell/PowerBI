@@ -1,0 +1,111 @@
+# M-Code Examples #
+
+# Custom Column Examples #
+
+#"Added Custom2" = Table.AddColumn(#"Changed Type3", "Result", 
+      each if [Points by Winner] > [Points by Loser] then "W" else "")
+
+--------------------------------------------------------------------------------------------
+
+# Multiple Replaces for NFL teams #
+
+#"Replace Values"= Table.ReplaceValue(#"Sorted Sk Rows", each[Tm], 
+        each if [Tm] ="DET" then "Detroit Lions"
+        else if [Tm] = "TEN" then "Tennessee Titans" 
+        else if [Tm] = "MIN" then "Minnesota Vikings"
+        else if [Tm] = "TAM" then "Tampa Bay Buccaneers"
+        else if [Tm] = "WAS" then "Washington Commanders" 
+        else if [Tm] = "PHI" then "Philadelphia Eagles"
+        else if [Tm] = "PIT" then "Pittsburgh Steelers" 
+        else if [Tm] = "SFO" then "San Francisco 49ers" 
+        else if [Tm] = "SEA" then "Seattle Seahawks" 
+        else if [Tm] = "NYJ" then "New York Jets" 
+        else if [Tm] = "NYG" then "New York Giants" 
+        else if [Tm] = "NOR" then "New Orleans Saints"
+        else if [Tm] = "MIA" then "Miami Dolphins" 
+        else if [Tm] = "LAR" then "Los Angeles Rams" 
+        else if [Tm] = "LAC" then "Los Angeles Chargers" 
+        else if [Tm] = "LVR" then "Las Vegas Raiders" 
+        else if [Tm] = "KAN" then "Kansas City Chiefs" 
+        else if [Tm] = "JAX" then "Jacksonville Jaguars" 
+        else if [Tm] = "IND" then "Indianapolis Colts" 
+        else if [Tm] = "HOU" then "Houston Texans" 
+        else if [Tm] = "GNB" then "Green Bay Packers" 
+        else if [Tm] = "DEN" then "Denver Broncos" 
+        else if [Tm] = "DAL" then "Dallas Cowboys" 
+        else if [Tm] = "CLE" then "Cleveland Browns" 
+        else if [Tm] = "CIN" then "Cincinnati Bengals" 
+        else if [Tm] = "CHI" then "Chicago Bears" 
+        else if [Tm] = "CAR" then "Carolina Panthers" 
+        else if [Tm] = "BUF" then "Buffalo Bills" 
+        else if [Tm] = "BAL" then "Baltimore Ravens" 
+        else if [Tm] = "ATL" then "Atlanta Falcons"
+        else if [Tm] = "ARI" then "Arizona Cardinals"
+        else if [Tm] = "NWE" then "New England Patriots" else [Tm], 
+        Replacer.ReplaceText,{"Tm"}),
+
+--------------------------------------------------------------------------------------------
+
+# Multiple Grouped Examples for NFL #
+
+GroupedData = Table.Group(#"Changed Type2", {"Team"}, {
+        {"Interceptions", each List.Sum([Interceptions]), Int64.Type},
+        {"Passes Defended", each List.Sum([Passes Defended]), Int64.Type},
+        {"Fumble Recovery", each List.Sum([Fumble Recovery]), Int64.Type},
+        {"Sacks", each List.Sum([Sacks]), Int64.Type},
+        {"Combo Tackles", each List.Sum([Combo Tackles]), Int64.Type},
+        {"Solo Tackles", each List.Sum([Solo Tackles]), Int64.Type},
+        {"Tackles for Loss", each List.Sum([Tackles for Loss]), Int64.Type},
+        {"QB Hits", each List.Sum([QBHits]), Int64.Type},
+        {"Forced Fumbles", each List.Sum([Forced Fumbles]), Int64.Type}
+
+--------------------------------------------------------------------------------------------
+
+# Weighted Averages Formula (NFL Offense) #
+
+# Normalize the offensive metrics # --
+    MaxAttempts = List.Max(#"Reordered Columns"[Attempts]),
+    MaxRushingYards = List.Max(#"Reordered Columns"[Rushing Yards]),
+    MaxYardsPerAttempt = List.Max(#"Reordered Columns"[YardsPerAttempt]),
+    MaxRushingTouchdowns = List.Max(#"Reordered Columns"[Rushing Touchdowns]),
+    MaxRushingFirstDowns = List.Max(#"Reordered Columns"[Rushing First Downs]),
+    MaxYardsBeforeContact = List.Max(#"Reordered Columns"[Yards Before Contact]),
+    MaxYardsBeforeContactPerAttempt = List.Max(#"Reordered Columns"[#"Yards Before Contact/Attempt"]),
+    MaxYardsAfterContact = List.Max(#"Reordered Columns"[Yards After Contact]),
+    MaxYardsAfterContactPerAttempt = List.Max(#"Reordered Columns"[#"Yards After Contact/Attempt"]),
+    MaxBrokenTackles = List.Max(#"Reordered Columns"[Broken Tackles]),
+    MaxAttemptsPerBrokenTackle = List.Max(#"Reordered Columns"[#"Attempts/Broken Tackle"]),
+
+# Add normalized columns # --
+    AddedNormalizedAttempts = Table.AddColumn(#"Reordered Columns", "Normalized Attempts", each [Attempts] / MaxAttempts),
+    AddedNormalizedRushingYards = Table.AddColumn(AddedNormalizedAttempts, "Normalized Rushing Yards", each [Rushing Yards] / MaxRushingYards),
+    AddedNormalizedYardsPerAttempt = Table.AddColumn(AddedNormalizedRushingYards, "Normalized Yards Per Attempt", each [YardsPerAttempt] / MaxYardsPerAttempt),
+    AddedNormalizedRushingTouchdowns = Table.AddColumn(AddedNormalizedYardsPerAttempt, "Normalized Rushing Touchdowns", each [Rushing Touchdowns] / MaxRushingTouchdowns),
+    AddedNormalizedRushingFirstDowns = Table.AddColumn(AddedNormalizedRushingTouchdowns, "Normalized Rushing First Downs", each [Rushing First Downs] / MaxRushingFirstDowns),
+    AddedNormalizedYardsBeforeContact = Table.AddColumn(AddedNormalizedRushingFirstDowns, "Normalized Yards Before Contact", each [Yards Before Contact] / MaxYardsBeforeContact),
+    AddedNormalizedYardsBeforeContactPerAttempt = Table.AddColumn(AddedNormalizedYardsBeforeContact, "Normalized Yards Before Contact/Attempt", each [#"Yards Before Contact/Attempt"] / MaxYardsBeforeContactPerAttempt),
+    AddedNormalizedYardsAfterContact = Table.AddColumn(AddedNormalizedYardsBeforeContactPerAttempt, "Normalized Yards After Contact", each [Yards After Contact] / MaxYardsAfterContact),
+    AddedNormalizedYardsAfterContactPerAttempt = Table.AddColumn(AddedNormalizedYardsAfterContact, "Normalized Yards After Contact/Attempt", each [#"Yards After Contact/Attempt"] / MaxYardsAfterContactPerAttempt),
+    AddedNormalizedBrokenTackles = Table.AddColumn(AddedNormalizedYardsAfterContactPerAttempt, "Normalized Broken Tackles", each [Broken Tackles] / MaxBrokenTackles),
+    AddedNormalizedAttemptsPerBrokenTackle = Table.AddColumn(AddedNormalizedBrokenTackles, "Normalized Attempts/Broken Tackle", each [#"Attempts/Broken Tackle"] / MaxAttemptsPerBrokenTackle),
+
+# Calculate Offensive Rating using the weighted formula (adjusting weights as needed) # --
+    AddedOffensiveRating = Table.AddColumn(AddedNormalizedAttemptsPerBrokenTackle, "Offensive Rating Merge", 
+        each 
+            (0.05 * [Normalized Attempts]) + 
+            (0.20 * [Normalized Rushing Yards]) + 
+            (0.15 * [Normalized Yards Per Attempt]) + 
+            (0.25 * [Normalized Rushing Touchdowns]) + 
+            (0.10 * [Normalized Rushing First Downs]) + 
+            (0.05 * [Normalized Yards Before Contact]) + 
+            (0.10 * [#"Normalized Yards Before Contact/Attempt"]) + 
+            (0.05 * [Normalized Yards After Contact]) + 
+            (0.10 * [#"Normalized Yards After Contact/Attempt"]) + 
+            (0.05 * [Normalized Broken Tackles]) +
+            (0.10 * [#"Normalized Attempts/Broken Tackle"])
+    ),
+
+    RankedOffensiveTable = Table.Sort(AddedOffensiveRating, {{"Offensive Rating Merge", Order.Descending}}),
+
+
+
