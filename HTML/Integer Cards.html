@@ -1,0 +1,33 @@
+Delivery KPI Gradient Vertical Line (Integer) = 
+VAR _Current = FORMAT([Delivery Count - Current Week], "#,0")
+VAR _LastWeek = FORMAT([Delivery Count - Last Week], "#,0")
+VAR _DiffRaw = [Delivery Count - Current Week] - [Delivery Count - Last Week]
+VAR _Change = FORMAT(_DiffRaw, "#,0")
+
+VAR _Color = 
+    SWITCH(TRUE(),
+        _DiffRaw > 0, "green", 
+        _DiffRaw < 0, "red",
+        "gray"
+    )
+
+VAR _Icon = 
+    SWITCH(TRUE(),
+        _DiffRaw > 0, "▲", 
+        _DiffRaw < 0, "▼",
+        "•"
+    )
+
+VAR _Sign = 
+    "<span style='color: " & _Color & ";'>" & _Icon & "</span>"
+
+VAR _ChangeText = 
+    "<span style='color: " & _Color & ";'>" & _Change & "</span>"
+
+RETURN
+"<div style='border-left: 8px solid; height: 80px; padding-left: 10px; border-image: linear-gradient(to bottom," & _Color & ",rgba(0, 0, 0, 0)) 1 100%; font-family: DIN, sans-serif;'>
+    <p style='font-size:16px; margin:0 0 6px 0;'>Delivery Count<br></p>
+    <h1 style='margin:0; font-size:28px; line-height:1;'>" & _Current & "&ensp;
+        <span style='font-size:18px;'>" & _Sign & " " & _ChangeText & "</span></h1>
+    <p style='font-size:14px; margin-top:10px; color: #555;'>Last Week: " & _LastWeek & "</p>
+</div>"
