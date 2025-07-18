@@ -1,0 +1,15 @@
+#"AddColumn1" = Table.AddColumn(
+    #"Replaced Value10", 
+    "Adjusted Country",
+    each 
+        if [Country of Ultimate Destination Code] = null then
+            if [Ultimate Consignee Company Name] = "MSA DE MEXICO S.A DE C.V" then "Mexico"
+            else if [Ultimate Consignee Company Name] = "MSA AU DC" then "Australia"
+            else if [Ultimate Consignee Company Name] = "IRP FIRE & SAFETY" then "Trinidad and Tobago"
+            else if [Ultimate Consignee Company Name] = "TODAYS INSTRUMENTS CO LTD" then "Taiwan"
+            else if [Ultimate Consignee Company Name] = "TODAYS INSTRUMENTS CO., LTD" then "Taiwan"
+            else if Text.StartsWith(Text.Upper([Ultimate Consignee Company Name]?), "REDA ") then "Saudi Arabia"
+            else null
+        else [Country of Ultimate Destination Code],
+    type text
+)
