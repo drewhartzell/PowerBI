@@ -1,0 +1,51 @@
+Progress Bar KPI card = 
+
+VAR _profit = FORMAT([CUR], "$#,##0")
+VAR _change = FORMAT([MoM change] , "0.00%")
+VAR _sign = IF([MoM change] >= 0, "<span style='color: green;'>▲</span>",
+                                  "<span style='color: red;'>▼</span>" )
+VAR _target= [Profit Target]
+
+RETURN
+"
+<head>
+<style>
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-auto-rows: minmax(30px, auto);
+  background: linear-gradient(to right, #F3F9A7, #CAC531);
+  border-radius: 15px 15px 15px 15px;
+  padding: 10px;
+}
+.grid-item {
+  padding: 20px;
+  font-size: 20px;
+  text-align: center;
+}
+.grid-item-2 {
+  padding: 20px;
+  font-size: 60px;
+  text-align: center;
+}
+</style>
+</head>
+<body>
+
+<div class='grid-container'>
+  <div class='grid-item'><b>Profit</b> &nbsp; 
+       <span style='font-size:14px'>(target $120k)</span>
+       &nbsp;&nbsp;&nbsp; <progress style='width:120px; height:18px; 
+                 accent-color: #5A5A5A'; max='100'; value='"&_target&"'>
+       </progress>
+  </div>
+  <div class='grid-item-2'><b>"&_target&"</b>
+           <span style='font-size:22px'>%</span><br>
+       <span style='font-size:16px'>
+        ( "&_profit&" &nbsp;&nbsp;"&_sign&""&_change&" &nbsp; MoM )        
+  </div>  
+ 
+</div>
+
+</body>
+"
