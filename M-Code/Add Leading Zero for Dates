@@ -1,0 +1,19 @@
+let
+    Source = ...,
+
+    #"Renamed Problematic Column" = Table.RenameColumns(Source, {
+        {"T-Port Delivery Performance[Past/Future]", "PastOrFuture"}
+    }),
+    #"Filtered Rows1" = Table.SelectRows(#"Renamed Problematic Column", each ([PastOrFuture] = "Past")),
+    #"Changed Type1" = Table.TransformColumnTypes(#"Filtered Rows1", {{"Interco On-Time", Percentage.Type}}),
+    #"Removed Columns" = Table.RemoveColumns(#"Changed Type1", {"PastOrFuture"}),
+
+    #"Inserted Merged Column" = Table.AddColumn(
+        #"Removed Columns",
+        "YearMonth",
+        each Text.From([Year]) & Text.PadStart(Text.From([Month]), 2, "0"),
+        type text
+    ),
+    #"Sorted Rows1" = Table.Sort(#"Inserted Merged Column", {{"YearMonth", Order.Descending}})
+in
+    #"Sorted Rows1"
