@@ -1,0 +1,25 @@
+Delivery - Current Year (R) = 
+VAR MaxYear =
+    MAX('OTIF - YTD Region *'[Year])
+RETURN
+    CALCULATE(
+        SUM('OTIF - YTD Region *'[Delivery Performance]),
+        'OTIF - YTD Region *'[Year] = MaxYear
+    )
+
+//
+//
+
+Delivery - Last Year (R) = 
+VAR MaxYear =
+    MAX('OTIF - YTD Region *'[Year])
+RETURN
+    CALCULATE(
+        SUM('OTIF - YTD Region *'[Delivery Performance]),
+        'OTIF - YTD Region *'[Year] = MaxYear - 1
+    )
+
+//
+//
+
+Delivery YTD Diff = [Delivery - Current Year (R)] - [Delivery - Last Year (R)]
