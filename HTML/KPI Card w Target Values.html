@@ -1,12 +1,35 @@
-Delivery KPI Gradient Vertical Line = 
-VAR _CurrentValue = [Delivery - Current Week]
-VAR _Current = FORMAT(_CurrentValue, "0.0%")
-VAR _LastWeek = FORMAT([Delivery - Last Week], "0.0%")
-VAR _Diff = [Delivery Current - Last]
-VAR _Change = FORMAT(_Diff, "0.0%")
-VAR _Target = 0.93  -- Set to 0 to disable target logic
+Blocked Inv. KPI Gradient Vertical Line = 
+VAR _CurrentValue = [Blocked - Current Week]
+VAR _LastWeekValue = [Blocked - Last Week]
+VAR _Diff = [Blocked - Current - Last]
+VAR _Target = 0  -- Set to 0 to disable bar color logic and marker
 
--- Bar gradient color based on target hit, default to gray if no target set
+-- Abbreviation logic for dollar values (B, M, fallback)
+VAR _Current = 
+    SWITCH(
+        TRUE(),
+        ABS(_CurrentValue) >= 1000000000, "$" & FORMAT(_CurrentValue / 1000000000, "0.00") & "B",
+        ABS(_CurrentValue) >= 1000000, "$" & FORMAT(_CurrentValue / 1000000, "0.00") & "M",
+        "$" & FORMAT(_CurrentValue, "#,0")
+    )
+
+VAR _LastWeek = 
+    SWITCH(
+        TRUE(),
+        ABS(_LastWeekValue) >= 1000000000, "$" & FORMAT(_LastWeekValue / 1000000000, "0.00") & "B",
+        ABS(_LastWeekValue) >= 1000000, "$" & FORMAT(_LastWeekValue / 1000000, "0.00") & "M",
+        "$" & FORMAT(_LastWeekValue, "#,0")
+    )
+
+VAR _Change = 
+    SWITCH(
+        TRUE(),
+        ABS(_Diff) >= 1000000000, "$" & FORMAT(_Diff / 1000000000, "0.00") & "B",
+        ABS(_Diff) >= 1000000, "$" & FORMAT(_Diff / 1000000, "0.00") & "M",
+        "$" & FORMAT(_Diff, "#,0")
+    )
+
+-- Bar gradient color based on target hit
 VAR _GradientColor = 
     IF(_Target = 0, "gray", 
         IF(_CurrentValue >= _Target, "green", "red")
@@ -15,8 +38,8 @@ VAR _GradientColor =
 -- Icon & text color based on trend
 VAR _TrendColor = 
     SWITCH(TRUE(),
-        _Diff > 0, "green", 
-        _Diff < 0, "red",
+        _Diff < 0, "green", 
+        _Diff > 0, "red",
         "gray"
     )
 
@@ -33,39 +56,15 @@ VAR _Sign =
 VAR _ChangeText = 
     "<span style='color: " & _TrendColor & ";'>" & _Change & "</span>"
 
--- Optional target marker (upside-down T) on bar — hidden if no target
-VAR _TargetMarker = 
-    IF(
-        _Target > 0,
-        "<div style='position:relative; height:0; top:64px; left:-14px;'>
-            <div style='width:16px; height:1px; background-color:black;'></div>
-            <div style='width:2px; height:6px; background-color:black; margin:0 auto;'></div>
-        </div>",
-        ""
-    )
-
--- Option 1: Target inline beside title
-VAR _TargetLabel_Title = 
-    IF(
-        _Target > 0,
-        "<span style='font-size:12px; color:#888; padding-left:6px;'>(🎯 " & FORMAT(_Target, "0.0%") & ")</span>",
-        ""
-    )
-
--- Option 2: Superscript badge (not used in return by default)
-VAR _TargetLabel_Superscript = 
-    IF(
-        _Target > 0,
-        "<span style='font-size:12px; vertical-align:super; color:#aaa;'>&nbsp;(" & FORMAT(_Target, "0.0%") & ")</span>",
-        ""
-    )
-
 RETURN
-"<div style='position:relative; border-left: 8px solid; height: 80px; padding-left: 10px; border-image: linear-gradient(to bottom," & _GradientColor & ",rgba(0, 0, 0, 0)) 1 100%; font-family: DIN, sans-serif;'>
-    " & _TargetMarker & "
-    <p style='font-size:16px; margin:0 0 6px 0;'>Delivery Performance" & _TargetLabel_Title & "</p>
-    <h1 style='margin:0; font-size:28px; line-height:1;'>" & _Current & "&ensp;
-        <span style='font-size:18px;'>" & _Sign & " " & _ChangeText & "</span></h1>
-    <p style='font-size:14px; margin:6px 0 0 0; color:#555;'>Last Week: " & _LastWeek & "</p>
-</div>"
+"<div style='border-left: 8px solid; height: 80px; padding-left: 10px; border-image: linear-gradient(to bottom," & _GradientColor & ",rgba(0, 0, 0, 0)) 1 100%; font-family: DIN, sans-serif;'>
+    <p style='font-size:16px; margin:0 0 6px 0;'>
+    Blocked Inventory
+    <br></p>
+    <h1 style='margin:0; font-size:24px; line-height:1;'>" & _Current & "&ensp;
+        <span style='font-size:14px;'>" & _Sign & " " & _ChangeText & "</span></h1>
+    <p style='font-size:14px; margin:6px 0 0 0; color:#555;'>
+    Last Week: " & _LastWeek & "</p>" &
+"</div>"
+
 
