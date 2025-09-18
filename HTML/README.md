@@ -2,4 +2,4 @@ Utilize the cards for KPI increases and decreases over a trending period of time
 
 HTML Cards w/o Gradient
 
-<img width="194" height="92" alt="image" src="https://github.com/user-attachments/assets/3211e90d-4229-46e4-bd31-d7d780c75f2e" />
+<img width="406" height="155" alt="image" src="https://github.com/user-attachments/assets/31329040-fc53-41d6-87a9-83f08903a6b1" />
