@@ -1,0 +1,62 @@
+IRA HTML = 
+VAR _CurrentValue = [IRA - Next Year (R)]
+VAR _LastWeekValue = [IRA - Current Year (R)]
+VAR _Diff = [IRA - Diff]
+VAR _Target = 0  -- Set to 0 to disable bar color logic and marker
+
+-- Abbreviation logic for dollar values (B, M, fallback)
+VAR _Current = 
+    SWITCH(
+        TRUE(),
+        ABS(_CurrentValue) >= 1000000000, "$" & FORMAT(_CurrentValue / 1000000000, "0.00") & "B",
+        ABS(_CurrentValue) >= 1000000, "$" & FORMAT(_CurrentValue / 1000000, "0.00") & "M",
+        "$" & FORMAT(_CurrentValue, "#,0")
+    )
+
+VAR _LastWeek = 
+    SWITCH(
+        TRUE(),
+        ABS(_LastWeekValue) >= 1000000000, "$" & FORMAT(_LastWeekValue / 1000000000, "0.00") & "B",
+        ABS(_LastWeekValue) >= 1000000, "$" & FORMAT(_LastWeekValue / 1000000, "0.00") & "M",
+        "$" & FORMAT(_LastWeekValue, "#,0")
+    )
+
+VAR _Change = 
+    SWITCH(
+        TRUE(),
+        ABS(_Diff) >= 1000000000, "$" & FORMAT(_Diff / 1000000000, "0.00") & "B",
+        ABS(_Diff) >= 1000000, "$" & FORMAT(_Diff / 1000000, "0.00") & "M",
+        "$" & FORMAT(_Diff, "#,0")
+    )
+
+-- Icon & text color based on trend
+VAR _TrendColor = 
+    SWITCH(TRUE(),
+        _Diff > 0, "#8ED974", 
+        _Diff < 0, "red",
+        "gray"
+    )
+
+VAR _Icon = 
+    SWITCH(TRUE(),
+        _Diff > 0, "▲", 
+        _Diff < 0, "▼",
+        "•"
+    )
+
+VAR _Sign = 
+    "<span style='color: " & _TrendColor & "; font-family: DIN, sans-serif;'>" & _Icon & "</span>"
+
+VAR _ChangeText = 
+    "<span style='color: " & _TrendColor & "; font-family: DIN, sans-serif;'>" & _Change & "</span>"
+
+RETURN
+"<div style='height: 55px; padding-left: 10px; font-family: DIN, sans-serif;'>
+    <p style='font-size:14px; margin:0 0 0px 0; font-family: DIN, sans-serif;'>
+    IRA 
+    </p>
+    <h1 style='margin:0; font-size:18px; line-height:1; font-family: DIN, sans-serif;'>" & _Current & "&ensp;
+        <span style='font-size:12px; font-family: DIN, sans-serif;'>" & _Sign & " " & _ChangeText & "</span></h1>
+    <p style='font-size:12px; margin:2px 0 0 0; color:#555; font-family: DIN, sans-serif;'>
+    Last Year: " & _LastWeek & "</p>" &
+"</div>"
