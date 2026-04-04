@@ -1,0 +1,10 @@
+SSO Login:
+- Power BI Connector
+- Token created for the link/JQL query
+- Adjust JQL query needed for the request
+- 
+
+Power BI
+- Basic login
+- Username: SSO user
+- Password: Token Key
