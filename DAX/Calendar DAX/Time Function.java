@@ -1,0 +1,38 @@
+// Dynamic Formatting //
+// Format String = FORMAT([Avg First Swipe], "h:mm AM/PM") within the model view //
+// With the above, can use in a line graph/trending analysis //
+
+Avg First Swipe = 
+CALCULATE(
+    AVERAGE(Database[Time]),
+    Database[Swipe Type] = "First Swipe"
+)
+  
+//
+  
+Avg Last Swipe = 
+CALCULATE(
+    AVERAGE(Database[Time]),
+    Database[Swipe Type] = "Last Swipe"
+)
+
+//
+
+Swipe Type = 
+VAR MinTime =
+    CALCULATE(
+        MIN(Database[Time]),
+        ALLEXCEPT(Database, Database[Employee Name], Database[Date])
+    )
+VAR MaxTime =
+    CALCULATE(
+        MAX(Database[Time]),
+        ALLEXCEPT(Database, Database[Employee Name], Database[Date])
+    )
+RETURN
+    SWITCH(
+        TRUE(),
+        Database[Time] = MinTime, "First Swipe",
+        Database[Time] = MaxTime, "Last Swipe",
+        "Other"
+    )
