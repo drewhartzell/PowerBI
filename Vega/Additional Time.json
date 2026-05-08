@@ -1,0 +1,117 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v5.json",
+
+  "config": {
+    "style": {
+      "clockText": {
+        "font": "'Calibri'",
+        "fontSize": 26,
+        "fontWeight": "bold",
+        "fill": "white"
+      },
+      "clockStatus": {
+        "font": "'Segoe UI', Arial, Helvetica, sans-serif",
+        "fontSize": 12,
+        "fill": "#9ee"
+      }
+    },
+    "text": {
+      "font": "'Segoe UI', Arial, Helvetica, sans-serif"
+    }
+  },
+
+  "data": [
+    { "name": "dataset" },
+    {
+      "name": "agg",
+      "source": "dataset",
+      "transform": [
+        { "type": "aggregate", "fields": ["load_timestamp"], "ops": ["max"], "as": ["max_load_timestamp"] }
+      ]
+    }
+  ],
+
+  "signals": [
+    { "name": "fontFamily", "value": "'Segoe UI', Arial, Helvetica, sans-serif" },
+    { "name": "interval", "value": 1980000 },
+
+    {
+      "name": "nowTick",
+      "init": "now()",
+      "on": [ { "events": { "type": "timer", "throttle": 250 }, "update": "now()" } ]
+    },
+
+    {
+      "name": "rawFromMeasure",
+      "update": "length(data('dataset')) > 0 && pluck(data('dataset'), 'MaxLoadTimestamp_Global_ISO_').length > 0 ? pluck(data('dataset'), 'MaxLoadTimestamp_Global_ISO_')[0] : null"
+    },
+    {
+      "name": "rawFromFallback",
+      "update": "length(data('agg')) > 0 ? data('agg')[0]['max_load_timestamp'] : null"
+    },
+    {
+      "name": "maxRaw",
+      "update": "rawFromMeasure != null && rawFromMeasure != '' ? rawFromMeasure : rawFromFallback"
+    },
+
+    { "name": "hasTZ", "update": "isString(maxRaw) && test(/Z|[+\\-]\\d\\d:\\d\\d$/, maxRaw)" },
+    { "name": "parsedMs", "update": "maxRaw == null ? null : (isNumber(maxRaw) ? toNumber(maxRaw) : toNumber(toDate(maxRaw)))" },
+    { "name": "maxMs", "update": "parsedMs == null ? null : (parsedMs + (hasTZ ? 0 : (-5 * 3600000)))" },
+
+    { "name": "elapsedMs", "update": "maxMs == null ? 0 : (nowTick - maxMs)" },
+    { "name": "remainingMs", "update": "max(0, interval - elapsedMs)" },
+    { "name": "remainingSec", "update": "floor(remainingMs/1000)" },
+    { "name": "mm", "update": "floor(remainingSec/60)" },
+    { "name": "ss", "update": "remainingSec % 60" },
+    { "name": "mmText", "update": "mm < 10 ? '0' + mm : '' + mm" },
+    { "name": "ssText", "update": "ss < 10 ? '0' + ss : '' + ss" },
+
+    { "name": "status", "update": "maxRaw == null ? 'Sin datos (medida y fallback vacíos)' : ''" },
+    { "name": "label", "update": "maxRaw == null ? '--:--' : (remainingMs <= 0 ? 'Refreshing...' : (mmText + ':' + ssText))" },
+    
+    {
+      "name": "pulseOpacity",
+      "update": "remainingMs <= 0 ? 0.65 + 0.35 * sin(nowTick / 600) : 1"
+    }
+  ],
+
+  "marks": [
+    {
+      "type": "text",
+      "encode": {
+        "enter": {
+          "x": { "value": 8 },
+          "y": { "value": 12 },
+          "align": { "value": "left" },
+          "baseline": { "value": "top" },
+          "font": { "signal": "fontFamily" },
+          "fontSize": { "value": 12 },
+          "fill": { "value": "#9ee" }
+        },
+        "update": {
+          "text": { "signal": "status == '' ? '' : status" }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "encode": {
+        "enter": {
+          "x": { "signal": "width/2" },
+          "y": { "signal": "height/2" },
+          "align": { "value": "center" },
+          "baseline": { "value": "middle" },
+          "font": { "signal": "fontFamily" },
+          "fontSize": { "signal": "remainingMs <= 0 ? 22 : 26" },
+          "fontWeight": { "value": "bold" },
+          "fill": { "value": "white" }
+        },
+        "update": {
+          "text": { "signal": "label" },
+          
+          "opacity": { "signal": "pulseOpacity" }
+        }
+      }
+    }
+  ]
+}
